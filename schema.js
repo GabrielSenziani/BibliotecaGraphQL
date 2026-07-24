@@ -1,26 +1,42 @@
 const typeDefs = `#graphql
   type Livro {
+  id: ID!
    titulo: String!
-   autor: String!
+   autor: Autor!
+  }
+
+  type Autor {
+   id: ID!
+   nome: String!
+   idade: Int!
+   livros: [Livro!]!
   }
 
   type Query {
-   livros: [Livro]
+   livros: [Livro!]!
 
+   livro(id: ID!): Livro
 
-  livro(id: ID!): Livro
+   autores: [Autor]
+
+   autor(id: ID!): Autor
   }
 
   type Mutation {
   criaLivro(
     titulo: String!
-    autor: String!
+    autorId: ID!
   ): Livro
+
+  criaAutor(
+  nome: String!
+  idade: Int!
+  ): Autor
 
   atualizarLivro(
     id: ID!
-    titulo: String!
-    autor: String!
+    titulo: String
+    autorId: ID
   ): Livro
 
   deletarLivro(
