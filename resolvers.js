@@ -46,8 +46,8 @@ const resolvers = {
      }
     },
     Mutation: {
-      criaLivro: async (_, args) => {
-        const { autorId, ...dadosDoLivro } = args
+      criaLivro: async (_, { input }) => {
+        const { autorId, ...dadosDoLivro } = input
 
         if (!mongoose.Types.ObjectId.isValid(autorId)) {
           return null
@@ -68,30 +68,43 @@ const resolvers = {
         return livroPopulado
       },
 
-      criaAutor: async (_, args) => {
-        const novoAutor = await Autor.create(args)
+      criaAutor: async (_, { input }) => {
+        const novoAutor = await Autor.create(input)
 
         return novoAutor
       },
-      atualizarLivro: async (_, args) => {
-       const { id, autorId, ...novosDados} = args
+      atualizarLivro: async (_, { input }) => {
+       const { id, autorId, ...novosDados} = input
+
+       if (Object.values(novosDados).length === 0 && autorId === undefined) {
+        return null
+       }
 
        if (!mongoose.Types.ObjectId.isValid(id)) {
         return null
        }
 
-       if (!mongoose.Types.ObjectId.isValid(autorId)) {
+       if (autorId) {
+        if (!mongoose.Types.ObjectId.isValid(autorId)) {
+          return null
+        }
+        const autor = await Autor.findById(autorId)
+
+        if(!autor) {
+         return null
+        }
+
+        novosDados.autor = autorId
+       }
+
+       const verificaLivro = await Livro.findById(id)
+
+       if(!verificaLivro) {
         return null
        }
 
-       const autor = await Autor.findById(autorId)
-
-       if(!autor) {
-        return null
-       }
-
-       return await Livro
-       .findByIdAndUpdate(id, {...novosDados, autor: autorId}, {returnDocument: "after", runValidators: true})
+        return await Livro
+       .findByIdAndUpdate(id, novosDados, {returnDocument: "after", runValidators: true})
        .populate("autor")
       },
       deletarLivro: async (_, args) => {

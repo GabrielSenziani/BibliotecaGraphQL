@@ -1,4 +1,20 @@
 const typeDefs = `#graphql
+  input LivroInput {
+  titulo: String!
+  autorId: ID!
+  }
+
+  input AutorInput {
+  nome: String!
+  idade: Int!
+  }
+
+  input UpdateLivroInput {
+  id: ID!
+  titulo: String
+  autorId: ID
+  }
+
   type Livro {
   id: ID!
    titulo: String!
@@ -17,27 +33,17 @@ const typeDefs = `#graphql
 
    livro(id: ID!): Livro
 
-   autores: [Autor]
+   autores: [Autor!]!
 
    autor(id: ID!): Autor
   }
 
   type Mutation {
-  criaLivro(
-    titulo: String!
-    autorId: ID!
-  ): Livro
+  criaLivro(input: LivroInput!): Livro
 
-  criaAutor(
-  nome: String!
-  idade: Int!
-  ): Autor
+  criaAutor(input: AutorInput!): Autor
 
-  atualizarLivro(
-    id: ID!
-    titulo: String
-    autorId: ID
-  ): Livro
+  atualizarLivro(input: UpdateLivroInput!): Livro
 
   deletarLivro(
   id: ID!
