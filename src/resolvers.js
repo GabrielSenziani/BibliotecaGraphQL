@@ -1,6 +1,8 @@
 import Livro  from "./model/Livro.js"
 import Autor from "./model/Autor.js"
 import mongoose from "mongoose"
+import { buscarPorId } from "./utils/buscaPorId.js"
+import { ValidationError } from "./errors/ValidationError.js"
 
 const resolvers = {
     Query: {
@@ -13,30 +15,16 @@ const resolvers = {
         autor: async (_, args) => {
           const { id } = args
 
-          if (!mongoose.Types.ObjectId.isValid(id)) {
-            return null
-          }
-          const encontraIdAutor = await Autor.findById(id)
-
-          if (!encontraIdAutor) {
-            return null
-          }
+          const encontraIdAutor = await buscarPorId(Autor, id, "Autor")
+          
           return encontraIdAutor
         },
         livro: async (_, args) => {
         const { id } = args
 
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-          return null
-        }
+        const livro = await buscarPorId(Livro, id, "Livro")
 
-        const encontraIdLivro = await Livro.findById(id)
-
-        if (!encontraIdLivro) {
-          return null
-        }
-
-        return await encontraIdLivro.populate("autor")
+        return livro.populate("autor")
       }
     },
 
@@ -49,15 +37,7 @@ const resolvers = {
       criaLivro: async (_, { input }) => {
         const { autorId, ...dadosDoLivro } = input
 
-        if (!mongoose.Types.ObjectId.isValid(autorId)) {
-          return null
-        }
-
-        const autor = await Autor.findById(autorId)
-
-        if (!autor) {
-          return null
-        }
+        await buscarPorId(Autor, autorId, "Autor")
 
         const novoLivro = await Livro.create({...dadosDoLivro, autor: autorId})
 
@@ -77,30 +57,16 @@ const resolvers = {
        const { id, autorId, ...novosDados} = input
 
        if (Object.values(novosDados).length === 0 && autorId === undefined) {
-        return null
+        const mensagem = "Forneça pelo menos um dado para realizar a atualização do livro"
+        throw new ValidationError(mensagem)
        }
 
-       if (!mongoose.Types.ObjectId.isValid(id)) {
-        return null
-       }
+       await buscarPorId(Livro, id ,"Livro")
 
        if (autorId) {
-        if (!mongoose.Types.ObjectId.isValid(autorId)) {
-          return null
-        }
-        const autor = await Autor.findById(autorId)
-
-        if(!autor) {
-         return null
-        }
+        await buscarPorId(Autor, autorId, "Autor")
 
         novosDados.autor = autorId
-       }
-
-       const verificaLivro = await Livro.findById(id)
-
-       if(!verificaLivro) {
-        return null
        }
 
         return await Livro
@@ -110,15 +76,10 @@ const resolvers = {
       deletarLivro: async (_, args) => {
         const { id } = args
 
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-          return null
-        }
+       await buscarPorId(Livro, id, "Livro")
         
         const encontraLivroEDeleta = await Livro.findByIdAndDelete(id)
 
-        if (!encontraLivroEDeleta) {
-          return null
-        }
 
         return encontraLivroEDeleta
       }
