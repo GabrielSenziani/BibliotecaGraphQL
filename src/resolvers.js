@@ -29,8 +29,8 @@ const resolvers = {
     },
 
     Autor: {
-     livros: async (parent) => {
-      return await Livro.find({ autor: parent._id })
+     livros: async (parent, args, context) => {
+      return await context.livrosPorAutorLoader.load(parent._id)
      }
     },
     Mutation: {
@@ -56,7 +56,7 @@ const resolvers = {
       atualizarLivro: async (_, { input }) => {
        const { id, autorId, ...novosDados} = input
 
-       if (Object.values(novosDados).length === 0 && autorId === undefined) {
+       if ((autorId == undefined) && Object.values(novosDados).length === 0) {
         const mensagem = "Forneça pelo menos um dado para realizar a atualização do livro"
         throw new ValidationError(mensagem)
        }
