@@ -13,7 +13,7 @@ export async function cadastrar (email, senha) {
    throw new ValidationError("E-mail já cadastrado")
   }
 
-  const sal = await bcrypt.hash(senha, 10)
+  const senhaCriptografada = await bcrypt.hash(senha, 10)
 
   const novoUsuario = await Usuario.create({
     email: email,
