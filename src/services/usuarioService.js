@@ -14,7 +14,6 @@ export async function cadastrar (email, senha) {
   }
 
   const sal = await bcrypt.hash(senha, 10)
-  const senhaCriptografada = await bcrypt.hash(senha, sal) 
 
   const novoUsuario = await Usuario.create({
     email: email,
