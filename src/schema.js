@@ -16,7 +16,7 @@ const typeDefs = `#graphql
   }
 
   type Livro {
-  id: ID!
+   id: ID!
    titulo: String!
    autor: Autor!
   }
@@ -26,6 +26,15 @@ const typeDefs = `#graphql
    nome: String!
    idade: Int!
    livros: [Livro!]!
+  }
+
+  type Usuario {
+   id: ID!
+   email: String!
+  }
+
+  type LoginResponse {
+   token: String!
   }
 
   type Query {
@@ -48,7 +57,17 @@ const typeDefs = `#graphql
   deletarLivro(
   id: ID!
   ): Livro
-  }
+
+  cadastrar(
+  email: String!
+  senha: String!
+  ): Usuario
+
+  login(
+  email: String!
+  senha: String!
+  ): LoginResponse
+}
 
 `
 

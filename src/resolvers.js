@@ -3,6 +3,7 @@ import Autor from "./model/Autor.js"
 import mongoose from "mongoose"
 import { buscarPorId } from "./utils/buscaPorId.js"
 import { ValidationError } from "./errors/ValidationError.js"
+import { cadastrar, login } from "./services/usuarioService.js"
 
 const resolvers = {
     Query: {
@@ -52,6 +53,18 @@ const resolvers = {
         const novoAutor = await Autor.create(input)
 
         return novoAutor
+      },
+      cadastrar: async (_, args) => {
+       const { email, senha } = args
+
+       const resultado = await cadastrar(email, senha)
+       return resultado
+      },
+      login: async (_, args) => {
+       const { email, senha } = args
+
+       const resultado = await login(email, senha)
+       return { token: resultado }
       },
       atualizarLivro: async (_, { input }) => {
        const { id, autorId, ...novosDados} = input
