@@ -4,29 +4,30 @@ import mongoose from "mongoose"
 import { buscarPorId } from "./utils/buscaPorId.js"
 import { ValidationError } from "./errors/ValidationError.js"
 import { cadastrar, login } from "./services/usuarioService.js"
+import { requerAutenticacao } from "./middlewares/requerAuth.js"
 
 const resolvers = {
     Query: {
-        livros: async () => {
+        livros: requerAutenticacao (async (parent, args, context, info) => {
             return await Livro.find().populate("autor")
-        },
-        autores: async () => {
+        }),
+        autores: requerAutenticacao (async (parent, args, context, info) => {
          return await Autor.find()
-        },
-        autor: async (_, args) => {
+        }),
+        autor: requerAutenticacao (async (parent, args, context, info) => {
           const { id } = args
 
           const encontraIdAutor = await buscarPorId(Autor, id, "Autor")
           
           return encontraIdAutor
-        },
-        livro: async (_, args) => {
+        }),
+        livro: requerAutenticacao (async (parent, args, context, info) => {
         const { id } = args
 
-        const livro = await buscarPorId(Livro, id, "Livro")
+        const livroPopulado = await Livro.findById(id).populate("autor")
 
-        return livro.populate("autor")
-      }
+        return livroPopulado
+      })
     },
 
     Autor: {
@@ -35,8 +36,8 @@ const resolvers = {
      }
     },
     Mutation: {
-      criaLivro: async (_, { input }) => {
-        const { autorId, ...dadosDoLivro } = input
+      criaLivro: requerAutenticacao (async (parent, args, context, info) => {
+        const { autorId, ...dadosDoLivro } = args.input
 
         await buscarPorId(Autor, autorId, "Autor")
 
@@ -47,13 +48,13 @@ const resolvers = {
         .populate("autor")
 
         return livroPopulado
-      },
+      }),
 
-      criaAutor: async (_, { input }) => {
-        const novoAutor = await Autor.create(input)
+      criaAutor: requerAutenticacao (async (parent, args, context, info) => {
+        const novoAutor = await Autor.create(args.input)
 
         return novoAutor
-      },
+      }),
       cadastrar: async (_, args) => {
        const { email, senha } = args
 
@@ -66,8 +67,8 @@ const resolvers = {
        const resultado = await login(email, senha)
        return { token: resultado }
       },
-      atualizarLivro: async (_, { input }) => {
-       const { id, autorId, ...novosDados} = input
+      atualizarLivro: requerAutenticacao (async (parent, args, context, info) => {
+       const { id, autorId, ...novosDados} = args.input
 
        if ((autorId == undefined) && Object.values(novosDados).length === 0) {
         const mensagem = "Forneça pelo menos um dado para realizar a atualização do livro"
@@ -85,8 +86,8 @@ const resolvers = {
         return await Livro
        .findByIdAndUpdate(id, novosDados, {returnDocument: "after", runValidators: true})
        .populate("autor")
-      },
-      deletarLivro: async (_, args) => {
+      }),
+      deletarLivro: requerAutenticacao (async (parent, args, context, info) => {
         const { id } = args
 
        await buscarPorId(Livro, id, "Livro")
@@ -95,7 +96,7 @@ const resolvers = {
 
 
         return encontraLivroEDeleta
-      }
+      })
     }
    }
 export default resolvers;
