@@ -6,7 +6,7 @@ export async function auth ({ req }) {
   const authorization = req.headers.authorization
 
   if (!authorization) {
-    throw new AuthenticationError("Token não informado")
+    return null
   }
 
   if (!authorization.startsWith("Bearer ")) {
