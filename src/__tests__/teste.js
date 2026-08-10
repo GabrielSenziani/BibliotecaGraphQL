@@ -50,8 +50,6 @@ test("não deve retornar livros com formato de token inválido", async () => {
     .send({ query: `query { livros { titulo, id } }` })
     .set("Authorization", "Bearer " + tokenInvalido)
 
-    console.log(restokenInvalido.body)
-
 expect(restokenInvalido.body.data).toBeUndefined()
 expect(restokenInvalido.body.errors.length).toBeGreaterThan(0)
 expect(restokenInvalido.body.errors[0]).toHaveProperty("message", `Formato do token inválido`)
