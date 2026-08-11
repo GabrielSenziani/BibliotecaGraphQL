@@ -14,13 +14,13 @@ beforeAll(async () => {
 })
 
 beforeAll(async () => {
-    const cadastraELoga = await criaUsuarioELogar("robo123@gmail.com", "111222")
+    const cadastraELoga = await criaUsuarioELogar("autor123@gmail.com", "111222")
     dadosUsuario = cadastraELoga
 })
 
 afterAll(async () => {
     await Autor.deleteOne({ _id: idAutor })
-    await Usuario.deleteOne({ email: "robo123@gmail.com" })
+    await Usuario.deleteOne({ email: "autor123@gmail.com" })
     await mongoose.connection.close()
 })
 
