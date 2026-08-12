@@ -5,6 +5,7 @@ import { buscarPorId } from "./utils/buscaPorId.js"
 import { ValidationError } from "./errors/ValidationError.js"
 import { cadastrar, login } from "./services/usuarioService.js"
 import { requerAutenticacao } from "./middlewares/requerAuth.js"
+import Usuario from "./model/Usuario.js"
 
 const resolvers = {
     Query: {
@@ -96,6 +97,16 @@ const resolvers = {
 
 
         return encontraLivroEDeleta
+      }),
+
+      deletarUsuario: requerAutenticacao (async (parent, args, context, info) => {
+        const { id } = args
+
+        await buscarPorId(Usuario, id, "Usuario")
+
+        const encontraUsuarioEDeleta = await Usuario.findByIdAndDelete(id)
+
+        return encontraUsuarioEDeleta
       })
     }
    }

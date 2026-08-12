@@ -67,6 +67,10 @@ const typeDefs = `#graphql
   email: String!
   senha: String!
   ): LoginResponse
+
+  deletarUsuario(
+  id: ID!
+  ): Usuario
 }
 
 `
