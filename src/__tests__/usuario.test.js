@@ -44,3 +44,16 @@ test("retorna usuarios existentes e verifica se o usuario criado está na lista"
     expect(existeUsuario).toBe(true)
     expect(resUsuarios.body.data.usuarios.length).toBeGreaterThan(0)
 })
+
+test("deve deletar o usuario criado", async () => {
+    const resDeletaUsuario = await supertest(app)
+    .post("/graphql")
+    .send({ query: `mutation {deletarUsuario (id: "${dadosUsuario.id}") {id, email }}` })
+    .set("Authorization", "Bearer " + dadosUsuario.token)
+    .expect(200)
+
+    const idUsuarioDeletado = resDeletaUsuario.body.data.deletarUsuario.id
+
+    expect(idUsuarioDeletado).toBeDefined()
+    expect(idUsuarioDeletado).toBe(dadosUsuario.id)
+})
