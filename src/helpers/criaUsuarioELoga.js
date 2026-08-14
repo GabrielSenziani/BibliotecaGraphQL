@@ -3,9 +3,11 @@ import app from "../app.js";
 
 
 export async function criaUsuarioELogar(email, senha) {
-    await supertest(app)
+    const dadosDoCadastro = await supertest(app)
     .post("/graphql")
     .send({query: `mutation { cadastrar(email: "${email}", senha: "${senha}") {id email} }`})
+
+    const id = dadosDoCadastro.body.data.cadastrar.id
 
     const resLogin = await supertest(app)
         .post("/graphql")
@@ -13,5 +15,5 @@ export async function criaUsuarioELogar(email, senha) {
        
        const token = resLogin.body.data.login.token
 
-    return { email, senha, token }
+    return { email, senha, token, id }
 }

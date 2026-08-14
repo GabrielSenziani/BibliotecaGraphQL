@@ -19,8 +19,6 @@ beforeAll( async () => {
 beforeAll(async () => {
     const cadastraELoga = await criaUsuarioELogar("livro123@gmail.com", "111222")
     dadosUsuario = cadastraELoga
-
-    console.log(dadosUsuario)
 })
 
 beforeAll(async () => {

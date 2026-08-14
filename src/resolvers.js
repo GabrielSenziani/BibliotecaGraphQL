@@ -25,10 +25,20 @@ const resolvers = {
         livro: requerAutenticacao (async (parent, args, context, info) => {
         const { id } = args
 
-        const livroPopulado = await Livro.findById(id).populate("autor")
+        const livroPopulado = await buscarPorId(Livro, id, "Livro")
 
-        return livroPopulado
-      })
+        return livroPopulado.populate("autor")
+      }),
+       usuarios: requerAutenticacao (async (parent, args, context, info) => {
+         return await Usuario.find()
+       }),
+       usuario: requerAutenticacao (async (parent, args, context, info) => {
+        const { id } = args
+
+        const buscaUsuario = await buscarPorId(Usuario, id, "Usuario")
+
+        return buscaUsuario
+       })
     },
 
     Autor: {

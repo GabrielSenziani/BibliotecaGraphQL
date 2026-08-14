@@ -45,6 +45,10 @@ const typeDefs = `#graphql
    autores: [Autor!]!
 
    autor(id: ID!): Autor
+
+   usuarios: [Usuario!]!
+
+   usuario(id: ID!): Usuario
   }
 
   type Mutation {
