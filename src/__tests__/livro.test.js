@@ -46,6 +46,43 @@ test("deve criar um livro sem erro nenhum", async () => {
   expect(resCriaLivro.body.data.criaLivro.titulo).toBe("Cavaleiro das Trevas")
 })
 
+test("deve atualizar o livro criado", async () => {
+    const resLivroAtualizado = await supertest(app)
+    .post("/graphql")
+    .send({ query: `mutation {atualizarLivro(input: {id: "${livroId}", titulo: "Piratas do Caribe", autorId: "${autorId}"}) {titulo, id} }` })
+    .set("Authorization", "Bearer " + dadosUsuario.token)
+    .expect(200)
+
+    livroId = resLivroAtualizado.body.data.atualizarLivro.id
+
+    expect(livroId).toBeDefined()
+    expect(resLivroAtualizado.body.data.atualizarLivro.titulo).toBe("Piratas do Caribe")
+})
+
+test("não deve atualizar o livro criado por falta de dados", async () => {
+    const resFaltaDados = await supertest(app)
+    .post("/graphql")
+    .send({ query: `mutation {atualizarLivro(input: {id: "${livroId}"}) {titulo, id} }` })
+    .set("Authorization", "Bearer " + dadosUsuario.token)
+
+    expect(resFaltaDados.body.data.atualizarLivro).toBeNull()
+    expect(resFaltaDados.body.errors.length).toBeGreaterThan(0)
+    expect(resFaltaDados.body.errors[0]).toHaveProperty("message", `Forneça pelo menos um dado para realizar a atualização do livro`)
+})
+
+test("deve deletar o livro criado", async () => {
+    const resDeletaLivro = await supertest(app)
+    .post("/graphql")
+    .send({ query: `mutation {deletarLivro (id: "${livroId}") {titulo, id} }` })
+    .set("Authorization", "Bearer " + dadosUsuario.token)
+    .expect(200)
+
+    const idDeletado = resDeletaLivro.body.data.deletarLivro.id
+
+    expect(idDeletado).toBeDefined()
+    expect(idDeletado).toBe(livroId)
+})
+
 test("não deve criar um livro por conta da ausência de autor", async () => {
     const novoId = new mongoose.Types.ObjectId()
     const resAutorAusente = await supertest(app)
