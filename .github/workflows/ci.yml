@@ -10,6 +10,7 @@ jobs:
 
     env:
       MONGO_URI: ${{ secrets.MONGO_URI_TEST }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
     steps:
     - name: Baixar código do repositório
