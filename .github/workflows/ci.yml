@@ -24,5 +24,14 @@ jobs:
     - name: Instala dependências
       run: npm ci
 
+    - name: Verificar variável do MongoDB
+      run: |
+        if [ -z "$MONGO_URI" ]; then
+          echo "MONGO_URI não foi configurada"
+          exit 1
+        else
+          echo "MONGO_URI configurada"
+        fi
+
     - name: Executa testes automatizados
       run: npm test
