@@ -70,6 +70,18 @@ test("não deve atualizar o livro criado por falta de dados", async () => {
     expect(resFaltaDados.body.errors[0]).toHaveProperty("message", `Forneça pelo menos um dado para realizar a atualização do livro`)
 })
 
+test("deve retornar a lista de livros quando autenticado", async () => {
+    const res = await supertest(app)
+    .post("/graphql")
+    .send({ query: `query { livros { titulo, id } }` })
+    .set("Authorization", "Bearer " + dadosUsuario.token)
+    .expect(200)
+
+  expect(Array.isArray(res.body.data.livros)).toBe(true)
+  expect(res.body.data.livros.length).toBeGreaterThan(0)
+  expect(res.body.data.livros[0]).toHaveProperty("titulo")
+})
+
 test("deve deletar o livro criado", async () => {
     const resDeletaLivro = await supertest(app)
     .post("/graphql")

@@ -21,18 +21,6 @@ afterAll(async () => {
     await mongoose.connection.close()
 })
 
-test("deve retornar a lista de livros quando autenticado", async () => {
-    const res = await supertest(app)
-    .post("/graphql")
-    .send({ query: `query { livros { titulo, id } }` })
-    .set("Authorization", "Bearer " + dadosUsuario.token)
-    .expect(200)
-
-  expect(Array.isArray(res.body.data.livros)).toBe(true)
-  expect(res.body.data.livros.length).toBeGreaterThan(0)
-  expect(res.body.data.livros[0]).toHaveProperty("titulo")
-})
-
 test("não deve retornar livros sem autenticação", async () => { 
     const resSemToken= await supertest(app)
     .post("/graphql")
