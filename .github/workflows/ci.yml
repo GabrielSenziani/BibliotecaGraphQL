@@ -24,14 +24,25 @@ jobs:
     - name: Instala dependências
       run: npm ci
 
-    - name: Verificar variável do MongoDB
+    - name: Testar conexão com o MongoDB
       run: |
-        if [ -z "$MONGO_URI" ]; then
-          echo "MONGO_URI não foi configurada"
-          exit 1
-        else
-          echo "MONGO_URI configurada"
-        fi
+        node --input-type=module <<'EOF'
+        import mongoose from "mongoose";
 
+        try {
+          await mongoose.connect(process.env.MONGO_URI, {
+            serverSelectionTimeoutMS: 10000
+          });
+
+          console.log("Conexão com MongoDB realizada com sucesso");
+
+          await mongoose.disconnect();
+        } catch (error) {
+          console.error("Erro ao conectar no MongoDB");
+          console.error(error.message);
+          process.exit(1);
+        }
+        EOF
+        
     - name: Executa testes automatizados
       run: npm test
