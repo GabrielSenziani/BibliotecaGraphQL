@@ -112,7 +112,13 @@ const resolvers = {
       deletarUsuario: requerAutenticacao (async (parent, args, context, info) => {
         const { id } = args
 
-        await buscarPorId(Usuario, id, "Usuario")
+        const usuarioBuscado = await buscarPorId(Usuario, id, "Usuario")
+
+        if(usuarioBuscado._id.toString() !== context.usuario.id.toString()) {
+        const mensagem = "Não é possivel deletar outro usuario, você não possui acesso a essa ferramente"
+        
+        throw new ValidationError(mensagem)
+        }
 
         const encontraUsuarioEDeleta = await Usuario.findByIdAndDelete(id)
 
