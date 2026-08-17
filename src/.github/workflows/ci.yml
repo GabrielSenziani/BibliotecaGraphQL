@@ -1,0 +1,28 @@
+name: Node.js CI/CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs: 
+  pipeline:
+    runs-on: ubuntu-latest
+
+    env:
+      MONGO_URI: ${{ secrets.MONGO_URI_TEST }}
+
+    steps:
+    - name: Baixar código do repositório
+      uses: actions/checkout@v4
+
+    - name: Configurar o Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "25.8.0"
+        cache: "npm"
+
+    - name: Instala dependências
+      run: npm ci
+
+    - name: Executa testes automatizados
+      run: npm test
