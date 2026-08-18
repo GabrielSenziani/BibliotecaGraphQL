@@ -11,6 +11,7 @@ import resolvers from "./resolvers.js";
 const server = new ApolloServer({
     typeDefs, //schemas
     resolvers,
+    introspection: true,
     plugins: [
         ApolloServerPluginLandingPageLocalDefault({ embed: true }),
     ],
